@@ -13,7 +13,7 @@ function HomePage() {
                 Translate
             </h3>
             <button className='flex items-center text-base justify-between 
-            gap-4 mx-auto w-72 max-w-full my-4'>
+            gap-4 mx-auto w-72 max-w-full my-4 specialBtn px-4 py-2 rounded-lg'>
                 <p>Record</p>
                 <i className="fa-solid fa-microphone"></i>
             </button>
