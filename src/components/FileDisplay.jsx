@@ -2,7 +2,7 @@ import React from 'react'
 
 function FileDisplay(props) {
 
-    const { audioStream, file, handleResetAudio } = props;
+    const { audioStream, file, handleResetAudio, handleFormSubmission } = props;
 
     return (
         <main className='flex-1 flex p-4 flex-col gap-3 sm:gap-4 
@@ -24,7 +24,8 @@ function FileDisplay(props) {
                 hover:text-red-600 px-4 py-2 rounded-xl transition duration-200'>
                     Reset
                 </button>
-                <button className='specialBtn px-3 py-2 rounded-lg text-blue-400 
+                <button onClick={handleFormSubmission} 
+                className='specialBtn px-3 py-2 rounded-lg text-blue-400 
                 flex items-center gap-2 font-medium'>
                     <p>Transcribe</p><i className="fa-solid fa-pen-fancy"></i>
                 </button>

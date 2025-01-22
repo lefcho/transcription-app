@@ -89,6 +89,7 @@ function App() {
           <Transcribing />
         ) : isAudioAvailable ? (
           <FileDisplay 
+          handleFormSubmission={handleFormSubmission} 
           handleResetAudio={handleResetAudio} 
           file={file} 
           audioStream={audioStream}/>

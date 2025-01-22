@@ -1,7 +1,7 @@
 import { pipeline, Pipeline } from "@xenova/transformers";
 import { MessageTypes } from "./presets";
 import Transcribing from "../components/Transcribing";
-import { GenerationConfig } from "@xenova/transformers/types/utils/generation";
+import { GenerationConfig } from "@xenova/transformers";
 
 class MyTranscriptionPipeline {
     static task = 'automatic-speech-recognition';
@@ -137,7 +137,7 @@ class GenerationTracker {
         )
 
         this.processed_chunks = chunks.map((chunks, index) => {
-            return this.processed_chunks(chunks, index)
+            return this.processChunk(chunks, index)
         })
 
 
@@ -163,8 +163,20 @@ class GenerationTracker {
             end: Math.round(end) || Math.round(start + 0.9 + this.stride_length_s)
         }
     }
+}
 
-    function createPartialResultMessage(result, isDone, completedUntilTimestamp) {
+function createResultMessage(results, isDone, completedUntilTimestamp) {
+    self.postMessage({
+        type: MessageTypes.RESULT,
+        results,
+        isDone,
+        completedUntilTimestamp,
+    })
+}
 
-    }
+function createPartialResultMessage(result) {
+    self.postMessage({
+        type: MessageTypes.RESULT_PARTIAL,
+        result,
+    })
 }
