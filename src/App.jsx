@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import HomePage from './components/HomePage.jsx'
 import Header from './components/Header.jsx'
 import FileDisplay from './components/FileDisplay.jsx';
@@ -9,9 +9,47 @@ function App() {
   const [file, setFile] = useState(null);
   const [audioStream, setAudioStream] = useState(null);
   const [output, setOutput] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [downloading, setDownloading] = useState(false);
+  const [finished, setFinished] = useState(false);
+
+  const worker = useRef(null);
 
   const isAudioAvailable = file || audioStream;
+
+  useEffect(() => {
+    if (!worker.current) {
+      worker.current = new Worker(new URL(
+        './utils/whisper.worker.js', 
+        import.meta.url),
+        {type: 'module'})
+    }
+
+    const onMessageRecieved = async (e) => {
+      switch (e.data.type) {
+        case 'DOWNLOADING':
+          setDownloading(true); 
+          console.log('DOWNLOADING');
+          break;
+        case 'LOADING':
+          setLoading(true); 
+          console.log('LOADING');
+          break;
+        case 'RESULT':
+          setOutput(e.data.result); 
+          console.log('DOWNLOADING');
+          break;
+        case 'INFERENCE_DONE':
+          setFinished(true); 
+          console.log('DONE');
+          break;
+      }
+    }
+
+    worker.current.addEventListener('message', onMessageRecieved);
+
+    return () => worker.current.removeEventListener('message', onMessageRecieved);
+  }, [])
 
   function handleResetAudio() {
     setFile(null);
