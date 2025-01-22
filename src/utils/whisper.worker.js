@@ -87,5 +87,84 @@ async function sendDownloadingMessage(file, progress, loaded, total) {
 }
 
 class GenerationTracker {
-    
+    constructor(pipeline, stride_length_s) {
+        this.pipeline = pipeline
+        this.stride_length_s = stride_length_s
+        this.chunks = []
+        this.time_precision = pipeline?.processor.feature_extractor.config.
+        chunk_length / pipeline.model.config.max_source_position
+        this.processed_chunks = []
+        this.callbackFunctionCounter = 0
+    }
+
+    sendFinalResult() {
+        self.postMessage({
+            type: MessageTypes.INFERENCE_DONE
+        })}
+
+    callbackFunction(beams) {
+        this,this.callbackFunctionCounter += 1
+        if (this.callbackFunctionCounter % 10 !== 0) {
+            return;
+        }
+
+        const bestBeams = beams[0]
+        let text = this.pipeline.tokenizer.decode(bestBeams.
+            output_token_ids, {
+                skip_special_tokens: true
+            }
+        )
+
+        const result = {
+            text,
+            start: this.getLastChunkTimestamps(),
+            end: undefined,
+        }
+
+        createPartialResultMessage(result);
+    }
+
+    chunkCallback(data) {
+        this.chunks.push(data)
+
+        const [ text, {chunks}] = this.pipeline.tokenizer._decode_asr(
+            this.chunks,
+            {
+                time_precision: this.time_precision,
+                return_timestamps: true,
+                force_full_sequence: false,
+            }
+        )
+
+        this.processed_chunks = chunks.map((chunks, index) => {
+            return this.processed_chunks(chunks, index)
+        })
+
+
+        createResultMessage(
+            this.processed_chunks, false, this.getLastChunkTimestamp()
+        )
+    }
+
+    getLastChunksTimestamp() {
+        if (this.processed_chunks.length === 0) {
+
+        }
+    }
+
+    processChunk(chunks, index) {
+        const { text, timestamp } = chunks;
+        const [start, end] = timestamp;
+
+        return {
+            index,
+            text: `${text.trim()}`,
+            start: Math.round(start),
+            end: Math.round(end) || Math.round(start + 0.9 + this.stride_length_s)
+        }
+    }
+
+    function createPartialResultMessage(result, isDone, completedUntilTimestamp) {
+
+    }
 }
