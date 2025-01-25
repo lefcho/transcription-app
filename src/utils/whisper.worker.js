@@ -95,6 +95,7 @@ class GenerationTracker {
         chunk_length / pipeline.model.config.max_source_position
         this.processed_chunks = []
         this.callbackFunctionCounter = 0
+        
     }
 
     sendFinalResult() {
